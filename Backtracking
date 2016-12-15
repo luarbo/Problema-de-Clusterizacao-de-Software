@@ -1,0 +1,86 @@
+#Backtracking
+
+# gera todas as combinações de vetores possíveis e armazena o que tiver maior z. Todas as combinações com repetições é n**n
+
+import time
+import copy
+import random
+import itertools
+from itertools import *
+
+#funcao para definir se as ligações são intracluster ou intercluster
+def intralig(grupo,ligacao):
+    '''retorna o tipo de ligacao 'inter' ou 'intra' desta ligacao neste grupo'''
+    return ligacao[0] in grupo and ligacao[1] in grupo
+def interlig(grupo,ligacao):
+    return ligacao[0] in grupo or ligacao[1] in grupo
+
+
+n = input ("Entre com o valor de n: ")
+E = raw_input ("Entre com o conjunto de ligações (ex: 1-2 1-3 3-4 4-5 5-2): ")
+Pesos = raw_input ("Entre com os pesos de cada ligação, na ordem: ")
+
+#comeca contagem do tempo de CPU
+t1 = time.clock()     
+
+#Peso
+P = Pesos.split(" ")
+peso=[]
+for p in P:
+    peso.append(int(p))
+#criei o vetor peso, que vai ser trabalhado. Pesos foi embora. Agora é só peso.
+
+#Ligacoes
+#Gera vetores de duas posições, com as ligações
+ligacoes=[]
+novo= E.split (" ")
+for par in novo:
+    ligacoes.append(map(int,(par.split('-'))))
+#print  "Ligacoes:", ligacoes
+
+#enumera todos os valores possíveis de 0 a n-1. Se quiser começar no '1', deve-se mudar o range
+enumerar=[]
+for j in range (n):
+    enumerar.append(j)
+
+
+maiorz=0
+melhorsolucao=[0]
+for solucao in itertools.product(enumerar, repeat=n): #em cada "for" testa uma combinação possível de arrays. Inicia em [0,0,0,...,0]
+    #Cada solução terá seu agrupamento
+    grupos =[]
+    for j in range(n):    #perdendo o item zero pra facilitar
+        grupos.append([])  
+    for i in range(n):
+        #coloca i no grupo solucao[i]
+        grupos[solucao[i]].append(i)
+    #print "Grupos: ", grupos
+
+    #Verifica se as ligaçoes são inter ou intra
+    intra = inter = 0
+    z=0
+    for cada_grupo in grupos:
+        intra = inter = 0
+        for cada_ligacao in ligacoes:
+            if intralig(cada_grupo,cada_ligacao):
+                intra = intra + peso[ligacoes.index(cada_ligacao)]
+            if intralig(cada_grupo,cada_ligacao)== False and interlig(cada_grupo,cada_ligacao):
+                inter = inter + peso[ligacoes.index(cada_ligacao)]
+        if intra<>0:
+            z = z+(float(2*intra)/(2*intra + inter))
+    if z> maiorz:
+        maiorz=z
+        melhorsolucao[0]= solucao
+    #se quiser limitar o tempo de execução
+    #t3=time.clock()
+    #if t3-t1> 3600:
+     #   break
+print "maior z:", maiorz
+print "melhor solucao:", melhorsolucao
+
+t2 = time.clock()
+tempo = t2 - t1
+
+print 'Tempo de CPU: ', tempo
+
+
