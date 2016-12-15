@@ -12,7 +12,7 @@ Para o algoritmo genético você pode escolher:
 - Quantas gerações deseja gerar
 
 Como exemplo, você pode testar a instância "small" com os seguintes dados de entrada:
-n=3
-E=0-0 1-0 1-1 2-0 2-2
-Pesos=1 1 1 1 1
+- 3
+- 0-0 1-0 1-1 2-0 2-2
+- 1 1 1 1 1
 
