@@ -1,0 +1,167 @@
+# -*- coding: cp1252 -*-
+#Algoritmo Genetico
+
+import time
+import copy
+import random
+
+def intralig(grupo,ligacao):
+    '''retorna o tipo de ligacao 'inter' ou 'intra' desta ligacao neste grupo'''
+    return ligacao[0] in grupo and ligacao[1] in grupo
+def interlig(grupo,ligacao):
+    return ligacao[0] in grupo or ligacao[1] in grupo
+
+
+n = input ("Entre com o valor de n: ")
+E = raw_input ("Entre com o conjunto de ligações (ex: 1-2 1-3 3-4 4-5 5-2): ")
+Pesos = raw_input ("Entre com os pesos de cada ligação, na ordem: ")
+populacao = input ("Entre com o numero de geracoes que deseja criar: ")
+qtmutacoes = input ("Mutar: ")
+
+
+rodar = input ("Rodar: ")
+
+#comeca contagem do tempo de CPU
+t1 = time.clock()     
+
+#Peso
+P = Pesos.split(" ")
+peso=[]
+for p in P:
+    peso.append(int(p))
+#criei o vetor peso, que vai ser trabalhado. Pesos foi embora. Agora é só peso.
+
+
+from random import randint
+
+#Ligacoes
+#Gera vetores de duas posições, com as ligações
+ligacoes=[]
+novo= E.split (" ")
+for par in novo:
+    ligacoes.append(map(int,(par.split('-'))))
+#print  "Ligacoes:", ligacoes
+
+#Populacao inicial
+#populacao=100
+vetor=[]
+for i in range (populacao):
+        a=[]
+        for j in range (n):
+            a.append(randint(0,n-1))
+        vetor.append(a)
+#print "vetores/individuos iniciais aleatórios: ", vetor
+
+
+
+while (int (rodar) >0) :
+
+    grupoz=[] #gerar os grupos, os clusters que vão entrar os números
+    for dna in vetor:
+        grupos =[]
+        for j in range(n):    #perdendo o item zero pra facilitar
+            grupos.append([])  
+        for i in range(n):
+            #coloca i no grupo dna[i]
+            grupos[dna[i]].append(i)
+        #print "Grupos: ", grupos
+            
+        #Verifica se as ligaçoes são inter ou intra
+        intra = inter = 0
+        z=0
+        for cada_grupo in grupos:
+            intra = inter = 0
+            liglig=[]
+            for cada_ligacao in ligacoes:
+                if intralig(cada_grupo,cada_ligacao):
+                    intra = intra + peso[ligacoes.index(cada_ligacao)]
+                if intralig(cada_grupo,cada_ligacao)== False and interlig(cada_grupo,cada_ligacao):
+                    inter = inter + peso[ligacoes.index(cada_ligacao)]
+            if intra<>0:
+                z = z+(float(2*intra)/(2*intra + inter))
+        grupoz.append(z)
+    #grupozfixo=copy.deepcopy(grupoz)
+    #print "z: ", grupoz
+
+    duplas = [[]]
+    for i in range (populacao):
+        duplas.append('[]')
+        duplas[i]=grupoz[i],vetor[i]
+    duplas.remove('[]')
+    duplas.sort() #ordena a lista
+    #print "Melhor Z e respectivo melhor Individuo: ", duplas[populacao-1]
+
+    #uma lista de soluções (melhores) e funcoes objetivo (grupozo) em ordem do menor/pior para o maior/melhor
+    melhores=[]
+    grupozo=[]
+    for i in range (populacao): #for i in range(duplas.__len__()):
+        a=duplas[i]
+        grupozo.append(a[0])
+        melhores.append(a[1])
+
+    #print "melhores", melhores
+
+    dez=[]
+    #os 10 melhores das solucoes geradas
+    for j in range (populacao-(10*populacao/100),populacao):
+        dez.append(melhores[j])
+
+    #print "dez melhores", dez
+
+    #Aqui eu tenho a lista das melhores soluções iniciais. Próximo passo é gerar (populacao-10) filhos, fazer mutação e reorganizar as duplas recalculando o z
+
+    repeat=populacao-(10*populacao/100)
+    vetor=[]
+
+    #cruzamento
+    while (repeat>0):
+        
+        #observe que "melhores" não são os 10 melhores, é a lista de solucoes
+        pai1=melhores[randint(0,populacao-1)]
+        #print "pai 1", pai1
+            
+        pai2=melhores[randint(0,populacao-1)]
+        #print "pai 2", pai2
+        
+        filho=[]
+        
+        #aqui modifico caso escolho dividir ao meio ou por um número aleatório com um único ponto de quebra
+        quebra=randint(0,n)
+        for k in range (quebra):
+            filho.append(pai1[k])
+        for k in range (quebra, n):
+            filho.append(pai2[k])
+            
+
+        vetor.append(filho)
+        #print "filho", filho
+        repeat = repeat-1
+    
+    #adiciono os 90% novos filhos aos 10 melhores solucoes encontradas até o momento  
+    vetor=vetor + dez
+
+    numerodemutacoes = qtmutacoes
+
+   
+    #não mutar nos 10 melhores
+    for w in range (numerodemutacoes+1):
+        a=randint(0,vetor.__len__() - 1 )
+        b=randint(0,n-1)
+        c=randint(0,n-1)
+        if vetor[a] not in dez:
+            vetor[a][b] = c
+
+                
+    rodar = rodar - 1
+
+
+
+
+
+t2 = time.clock()
+tempo = t2 - t1
+
+print "O melhor indivíduo encontrado é o: ", melhores[populacao-1]
+print "A sua função objetivo Z é igual a: ", grupozo[populacao-1]
+
+print 'Tempo de CPU: ', tempo
