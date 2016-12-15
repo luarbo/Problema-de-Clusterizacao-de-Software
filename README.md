@@ -7,8 +7,8 @@ Os dados de entrada necessários são:
 - O peso de cada ligação
 
 Para o algoritmo genético você pode escolher:
-- O número de indivíduos da população inicial
-- A quantidade de mutações a cada iteração
+- O número de indivíduos da população
+- A quantidade de mutações das iterações
 - Quantas gerações deseja gerar
 
 Como exemplo, você pode testar a instância "small" com os seguintes dados de entrada:
