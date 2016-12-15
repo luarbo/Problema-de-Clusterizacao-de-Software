@@ -16,3 +16,4 @@ Como exemplo, você pode testar a instância "small" com os seguintes dados de e
 - 0-0 1-0 1-1 2-0 2-2
 - 1 1 1 1 1
 
+Sua função objetivo é z =1,8333
